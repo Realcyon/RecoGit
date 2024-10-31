@@ -1,0 +1,18 @@
+<style>
+#navBar{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 100px);
+    justify-content: center;
+}
+
+</style>
+<div id="navBar">
+    <a href="/">
+        <p>accceuil</p>
+    </a>
+{{#each navSection}}
+    <a href="/section/{{this}}">
+       <p>{{this}}</p>
+    </a>
+{{/each}}
+</div>

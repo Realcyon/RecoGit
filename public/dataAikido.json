@@ -1,0 +1,32 @@
+{
+  "ikkyo": {
+    "articleContent": "ikkyoContent.html",
+    "variation": [
+      { "position": "suwari waza", "attaque": "shomen", "grade": "rokkyu" },
+      {
+        "position": "hanmachi handachi waza",
+        "attaque": "shomen",
+        "grade": "sankyu"
+      },
+      { "position": "tachi waza", "attaque": "shomen", "grade": "hachikyu" },
+      { "position": "tachi waza", "attaque": "yokomen", "grade": "yonkyu" },
+      { "position": "buki waza", "attaque": "tanto dori", "grade": "nikyu" }
+    ],
+    "animation": "animation ikkyo"
+  },
+  "nikyo": {
+    "articleContent": "nikyoContent.txt",
+    "variation": [
+      { "position": "tachi waza", "attaque": "shomen", "grade": "nikyu" },
+      { "position": "buki waza", "attaque": "tanto dori", "grade": "nikyu" }
+    ],
+    "animation": "animation nikyo"
+  },
+  "sankyo": {
+    "variation": [
+      { "position": "tachi waza", "attaque": "shomen", "grade": "nikyu" },
+      { "position": "buki waza", "attaque": "tanto dori", "grade": "nikyu" }
+    ],
+    "animation": "animation sankyo"
+  }
+}
