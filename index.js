@@ -1,6 +1,7 @@
 import express from "express";
 import fs from "fs";
 import Handlebars from "handlebars";
+import bodyParser from "body-parser";
 
 const app = express();
 const port = 3000;
@@ -12,6 +13,7 @@ import path from "path";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 app.use("/public", express.static("public"));
+app.use(bodyParser.json());
 
 const strFromFile = (path) => fs.readFileSync(path).toString();
 
@@ -82,9 +84,28 @@ app.get("/section/:sectionName", (req, res) => {
 
 app.get("/add", (req, res) => {
   res.send(views.add({navigation: sendNavigation}));
-
 });
+
+app.post("/api/add",(req, res) => {
+
+
+  console.log(req);
+  console.log(req.body);
+  console.log(req.params);
+  console.log(req.query);
+  res.send(200);
+
+  if((JSON.stringify(req.body.title)).trim() != ""){
+  
+    fs.writeFileSync(
+    path.join(".", "output.json"),
+    JSON.stringify(req.body))}
+})
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
+
+
+
+
