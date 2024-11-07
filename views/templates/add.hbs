@@ -19,6 +19,8 @@
         <h1>titre</h1>
         <label for="titre">Titre</label>
           <input name="titre">
+          <label for="section">Section</label>
+          <input name="section">
         <label for="notes">Notes suplementaires</label>
           <input name="notes">
           <input type="submit">
@@ -35,22 +37,32 @@
       console.log("on envoie");
 
       if((form.querySelector('input[name="titre"]').value).trim() == ""){
-        console.log("titre non valide");
-      }else{
+        console.log("titre vide");
 
+      }else{
+        
+        if((form.querySelector('input[name="section"]').value).trim() == ""){
+        console.log("section vide");
+
+        }else{
       
-      const res = await fetch("/api/add",{
-        method:"post",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-          title:form.querySelector('input[name="titre"]').value,
-          note: form.querySelector('input[name="notes"]').value,
-        })
+        const res = await fetch("/api/add",{
+          method:"post",
+          headers:{
+            "Content-Type":"application/json"
+          },
+
+          body:JSON.stringify({
+            title:form.querySelector('input[name="titre"]').value,
+            section:form.querySelector('input[name="section"]').value,
+            note: form.querySelector('input[name="notes"]').value,
+          })
+
       })
 
-      console.log(res);}
+        }
+      console.log(res);
+      }
     })
   </script>
 </html>
