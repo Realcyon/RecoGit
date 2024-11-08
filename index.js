@@ -87,36 +87,41 @@ app.get("/add", (req, res) => {
 });
 
 app.post("/api/add",(req, res) => {
-
-
-  console.log(req);
-  console.log(req.body);
-  console.log(req.params);
-  console.log(req.query);
-  res.send(200);
-  const simplifiedDate = [Date().split(' ')[1],Date().split(' ')[2],Date().split(' ')[3]];
-
-  if((JSON.stringify(req.body.title)).trim() != "" && (JSON.stringify(req.body.section)).trim() != ""){
-    if(Object.keys(dataTitleRegister).includes(req.body.section)){
-      if(!(dataTitleRegister[req.body.section].map((a)=>a.title)).includes(req.body.title)){
-        dataTitleRegister[req.body.section].push({
-          "title":req.body.title,
-          "additionDate":simplifiedDate,
-          "notes": req.body.note
-        });
-      }
-    }else{
-      dataTitleRegister[req.body.section] =  
-      [{"title":req.body.title,
-      "additionDate":simplifiedDate,
-      "notes": req.body.note}]
-    }
-
-      fs.writeFileSync(
-        path.join(".", "output.json"),
-        JSON.stringify(dataTitleRegister)
-      )
+  if(req.body.title.trim() != ""){
+    res.status(400).send("le titre est obligatoire");
+    return;
   }
+
+  if(req.body.section.trim() != ""){
+    res.status(400).send("la section est obligatoire");
+    return;
+  }
+
+  if((dataTitleRegister[req.body.section].map((a)=>a.title)).includes(req.body.title)){
+    res.status(400).send("Ce titre est deja en memoire");
+    return;
+  }
+  // ok, maintenant que les checks sont fait, on passe au reste
+
+  // plutot que d'avoir 2 strategies d'insertion (une quand la section et existe et une quand elle existe pas)
+  // on check juste si elle existe pas, et si c'est la cas on la creer
+  if(!Object.keys(dataTitleRegister).includes(req.body.section)){
+    dataTitleRegister[req.body.section] = [];
+  }
+
+  dataTitleRegister[req.body.section].push({
+    "title":req.body.title,
+    "additionDate":Date.now(), // toujours les stocker sous forme de timestamp UTC+0 comme ca on peut generer toutes les version "lisibles par les humains" a partir de la. Mais on stocke la version "neutre" avec toutes les infos et puis c'est un entien 32bits, pas une string
+    "notes": req.body.note
+  });
+
+  // TODO faudra que j'y pense lundi
+  fs.writeFileSync(
+    path.join(".", "output.json"),
+    JSON.stringify(dataTitleRegister)
+  )
+
+  res.send(200);
 })
 
 app.listen(port, () => {
