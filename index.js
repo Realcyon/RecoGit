@@ -96,23 +96,26 @@ app.post("/api/add",(req, res) => {
   res.send(200);
 
   if((JSON.stringify(req.body.title)).trim() != "" && (JSON.stringify(req.body.section)).trim() != ""){
-  if(Object.keys(dataTitleRegister).includes(req.body.section)){
-
-    dataTitleRegister[req.body.section].push({
-      "title":req.body.title,
+    if(Object.keys(dataTitleRegister).includes(req.body.section)){
+      if(!(dataTitleRegister[req.body.section].map((a)=>a.title)).includes(req.body.title)){
+        dataTitleRegister[req.body.section].push({
+          "title":req.body.title,
+          "additionDate":"20 Aout 2012",
+          "notes": req.body.note
+        });
+      }
+    }else{
+      dataTitleRegister[req.body.section] =  
+      [{"title":req.body.title,
       "additionDate":"20 Aout 2012",
-      "notes": req.body.note
-  });
+      "notes": req.body.note}]
+    }
 
-  }else{
-    dataTitleRegister[req.body.section] =  [{"title":req.body.title,
-    "additionDate":"20 Aout 2012",
-    "notes": req.body.note}]
+      fs.writeFileSync(
+        path.join(".", "output.json"),
+        JSON.stringify(dataTitleRegister)
+      )
   }
-
-    fs.writeFileSync(
-    path.join(".", "output.json"),
-    JSON.stringify(dataTitleRegister))}
 })
 
 app.listen(port, () => {
