@@ -1,3 +1,5 @@
+output.json
+
 # Logs
 logs
 *.log
@@ -56,6 +58,7 @@ web_modules/
 
 # Optional stylelint cache
 .stylelintcache
+
 
 # Microbundle cache
 .rpt2_cache/
