@@ -87,17 +87,20 @@ app.get("/add", (req, res) => {
 });
 
 app.post("/api/add",(req, res) => {
-  if(req.body.title.trim() != ""){
+  if(req.body.title.trim() == ""){
     res.status(400).send("le titre est obligatoire");
     return;
   }
 
-  if(req.body.section.trim() != ""){
+  if(req.body.section.trim() == ""){
     res.status(400).send("la section est obligatoire");
     return;
   }
 
-  if((dataTitleRegister[req.body.section].map((a)=>a.title)).includes(req.body.title)){
+  const storedSection = dataTitleRegister[req.body.section];
+
+  if(storedSection
+    && storedSection.map((a)=>a.title).includes(req.body.title)){
     res.status(400).send("Ce titre est deja en memoire");
     return;
   }
