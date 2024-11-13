@@ -59,7 +59,7 @@
           section:form.querySelector('input[name="section"]').value,
           note: form.querySelector('input[name="notes"]').value,
         })
-      })
+      }).catch(err => console.err("Couldn't fetch ", err));
     }
   })
   </script>
