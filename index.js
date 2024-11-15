@@ -14,7 +14,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 app.use("/public", express.static("public"));
 app.use(bodyParser.json());
-
+console.log(path);
 const strFromFile = (path) => fs.readFileSync(path).toString();
 
 const views = {
@@ -55,13 +55,24 @@ app.get("/", (req, res) => {
 
  listSection.forEach(oneSection => {
     const sectionSize = dataTitleRegister[oneSection].length;
+    
     let randomSelector = Math.floor(Math.random()*sectionSize);
+ // j'essaie de couper les notes aux mot pour limiter leur taille et qu'elle ne perturbent pas la mise en page
+    //dataTitleRegister[oneSection][randomSelector].notes
+    const noteWordArr = ("dkjqgs dsfqdsf dqsfqdfqsd dqsfqsdfqfq qdsfqdfq d").split(' ');
+    const notesResized = [];
+    let i = 0;
+    let noteSize = 0;
+    while(noteSize + noteWordArr[i].length > 20){
+      notesResized.push(noteWordArr[i]);
+      i += 1;
+    }
 
     titleSelector.push({"sectionName":oneSection,
     "sectionLength":sectionSize,
     "sectionRandomTitle":dataTitleRegister[oneSection][randomSelector].title,
     "sectionRandomDate":dataTitleRegister[oneSection][randomSelector].additionDate,
-    "sectionRandomNotes":dataTitleRegister[oneSection][randomSelector].notes
+    "sectionRandomNotes":notesResized
  })
 
  });
@@ -86,19 +97,23 @@ app.get("/add", (req, res) => {
   res.send(views.add({navigation: sendNavigation}));
 });
 
+
+
 app.post("/api/add",(req, res) => {
-  if(req.body.title.trim() == ""){
+
+  const request = req.body;
+
+  if(request.title.trim() == ""){
     res.status(400).send("le titre est obligatoire");
     return;
   }
 
-  if(req.body.section.trim() == ""){
+  if(request.section.trim() == ""){
     res.status(400).send("la section est obligatoire");
     return;
   }
 
   const storedSection = dataTitleRegister[req.body.section];
-
   if(storedSection
     && storedSection.map((a)=>a.title).includes(req.body.title)){
     res.status(400).send("Ce titre est deja en memoire");
@@ -108,21 +123,20 @@ app.post("/api/add",(req, res) => {
 
   // plutot que d'avoir 2 strategies d'insertion (une quand la section et existe et une quand elle existe pas)
   // on check juste si elle existe pas, et si c'est la cas on la creer
-  if(!Object.keys(dataTitleRegister).includes(req.body.section)){
-    dataTitleRegister[req.body.section] = [];
+  if(!(Object.keys(dataTitleRegister).includes(request.section))){
+    dataTitleRegister[request.section] = [];
   }
 
-  dataTitleRegister[req.body.section].push({
-    "title":req.body.title,
-    "additionDate":Date.now(), // toujours les stocker sous forme de timestamp UTC+0 comme ca on peut generer toutes les version "lisibles par les humains" a partir de la. Mais on stocke la version "neutre" avec toutes les infos et puis c'est un entien 32bits, pas une string
-    "notes": req.body.note
+  dataTitleRegister[request.section].push({
+    "title":request.title,
+    "additionDate":Date.now(),  // toujours les stocker sous forme de timestamp UTC+0 comme ca on peut generer toutes les version "lisibles par les humains" a partir de la. Mais on stocke la version "neutre" avec toutes les infos et puis c'est un entien 32bits, pas une string
+    "notes": request.note
   });
 
   // TODO faudra que j'y pense lundi
+  
   fs.writeFileSync(
-    path.join(".", "output.json"),
-    JSON.stringify(dataTitleRegister)
-  )
+    path.join(".", "output.json"),JSON.stringify(dataTitleRegister))
 
   res.send(200);
 })
