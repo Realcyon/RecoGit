@@ -47,27 +47,33 @@ const sendNavigation = partials.navigation({navSection: Object.keys(dataTitleReg
 
 app.get("/", (req, res) => {
  let titleSelector=[];
- console.log(dataTitleRegister);
- console.log(typeof(dataTitleRegister));
+ //console.log(dataTitleRegister);
+// console.log(typeof(dataTitleRegister));
  let listSection = Object.keys(dataTitleRegister);
 
- console.log(listSection);
+ //console.log(listSection);
 
  listSection.forEach(oneSection => {
     const sectionSize = dataTitleRegister[oneSection].length;
     
     let randomSelector = Math.floor(Math.random()*sectionSize);
  // j'essaie de couper les notes aux mot pour limiter leur taille et qu'elle ne perturbent pas la mise en page
-    //dataTitleRegister[oneSection][randomSelector].notes
-    const noteWordArr = ("dkjqgs dsfqdsf dqsfqdfqsd dqsfqsdfqfq qdsfqdfq d").split(' ');
-    const notesResized = [];
-    let i = 0;
-    let noteSize = 0;
-    while(noteSize + noteWordArr[i].length > 20){
-      notesResized.push(noteWordArr[i]);
-      i += 1;
-    }
+    
+    //if(dataTitleRegister[oneSection][randomSelector].notes){
+      console.log(dataTitleRegister[oneSection][randomSelector].notes);
+      const noteWordArr = ("dkjqgs dsfqdsf df dqsfqdfqsd dqsfqsdfqfq qdsfqdfq d").split(' ');
+      //console.log(noteWordArr);
+      let notesResized = "";
+      let i = 0;
+      let noteSize = 0;
+      while(i < noteWordArr.length && noteSize + noteWordArr[i].length < 100){
+        notesResized = notesResized + " " + noteWordArr[i];
+        noteSize += noteWordArr[i].length
+        i += 1;
 
+      }
+    //}
+    //console.log(notesResized);
     titleSelector.push({"sectionName":oneSection,
     "sectionLength":sectionSize,
     "sectionRandomTitle":dataTitleRegister[oneSection][randomSelector].title,
@@ -76,7 +82,7 @@ app.get("/", (req, res) => {
  })
 
  });
-  console.log(titleSelector);
+  //console.log(titleSelector);
   
   res.send(views.index({navigation: sendNavigation , section: titleSelector }));
 });
