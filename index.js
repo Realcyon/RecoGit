@@ -45,6 +45,26 @@ const dataTitleRegister = JSON.parse(
 );
 const sendNavigation = partials.navigation({navSection: Object.keys(dataTitleRegister)});
 
+function shortNote(longNote){
+  let notesResized = "";
+  if( longNote != undefined){
+  const noteWordArr = longNote.split(' ');
+  let i = 0;
+  let noteSize = 0;
+  while(i < noteWordArr.length && noteSize + noteWordArr[i].length < 100){
+    notesResized = notesResized + " " + noteWordArr[i];
+    noteSize += noteWordArr[i].length
+    i += 1;
+  }
+  if(i < noteWordArr.length){
+    notesResized = notesResized + "..."
+
+  }
+}
+return(notesResized)
+}
+
+
 app.get("/", (req, res) => {
  let titleSelector=[];
  //console.log(dataTitleRegister);
@@ -58,21 +78,8 @@ app.get("/", (req, res) => {
     
     let randomSelector = Math.floor(Math.random()*sectionSize);
  // coupe des notes aux mot pour limiter leur taille et qu'elle ne perturbent pas la mise en page
-    let notesResized = "";
-    if(dataTitleRegister[oneSection][randomSelector].notes != undefined){
-      const noteWordArr = dataTitleRegister[oneSection][randomSelector].notes.split(' ');
-      let i = 0;
-      let noteSize = 0;
-      while(i < noteWordArr.length && noteSize + noteWordArr[i].length < 100){
-        notesResized = notesResized + " " + noteWordArr[i];
-        noteSize += noteWordArr[i].length
-        i += 1;
-      }
-      if(i < noteWordArr.length){
-        notesResized = notesResized + "..."
-
-      }
-    }
+    
+    const notesResized = shortNote(dataTitleRegister[oneSection][randomSelector].notes);
 
     titleSelector.push({"sectionName":oneSection,
     "sectionLength":sectionSize,
@@ -89,7 +96,8 @@ app.get("/", (req, res) => {
 
 app.get("/section/:sectionName", (req, res) => {
   const section = dataTitleRegister[req.params.sectionName];
-
+  section.forEach((element) => element.note = shortNote(element.note));
+  console.log(section);
   res.send(
     views.section({
       navigation: sendNavigation,
@@ -98,6 +106,7 @@ app.get("/section/:sectionName", (req, res) => {
     })
   );
 });
+
 
 app.get("/add", (req, res) => {
   res.send(views.add({navigation: sendNavigation}));
