@@ -57,23 +57,23 @@ app.get("/", (req, res) => {
     const sectionSize = dataTitleRegister[oneSection].length;
     
     let randomSelector = Math.floor(Math.random()*sectionSize);
- // j'essaie de couper les notes aux mot pour limiter leur taille et qu'elle ne perturbent pas la mise en page
-    
-    //if(dataTitleRegister[oneSection][randomSelector].notes){
-      console.log(dataTitleRegister[oneSection][randomSelector].notes);
-      const noteWordArr = ("dkjqgs dsfqdsf df dqsfqdfqsd dqsfqsdfqfq qdsfqdfq d").split(' ');
-      //console.log(noteWordArr);
-      let notesResized = "";
+ // coupe des notes aux mot pour limiter leur taille et qu'elle ne perturbent pas la mise en page
+    let notesResized = "";
+    if(dataTitleRegister[oneSection][randomSelector].notes != undefined){
+      const noteWordArr = dataTitleRegister[oneSection][randomSelector].notes.split(' ');
       let i = 0;
       let noteSize = 0;
       while(i < noteWordArr.length && noteSize + noteWordArr[i].length < 100){
         notesResized = notesResized + " " + noteWordArr[i];
         noteSize += noteWordArr[i].length
         i += 1;
+      }
+      if(i < noteWordArr.length){
+        notesResized = notesResized + "..."
 
       }
-    //}
-    //console.log(notesResized);
+    }
+
     titleSelector.push({"sectionName":oneSection,
     "sectionLength":sectionSize,
     "sectionRandomTitle":dataTitleRegister[oneSection][randomSelector].title,
