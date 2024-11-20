@@ -96,8 +96,9 @@ app.get("/", (req, res) => {
 
 app.get("/section/:sectionName", (req, res) => {
   const section = dataTitleRegister[req.params.sectionName];
-  section.forEach((element) => element.note = shortNote(element.note));
+  section.forEach((element) => element.notes = shortNote(element.notes));
   console.log(section);
+
   res.send(
     views.section({
       navigation: sendNavigation,
