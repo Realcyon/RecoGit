@@ -14,7 +14,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 app.use("/public", express.static("public"));
 app.use(bodyParser.json());
-console.log(path);
+//console.log(path);
 const strFromFile = (path) => fs.readFileSync(path).toString();
 
 const views = {
@@ -45,25 +45,19 @@ const dataTitleRegister = JSON.parse(
 );
 const sendNavigation = partials.navigation({navSection: Object.keys(dataTitleRegister)});
 
-function shortNote(longNote){
-  let notesResized = "";
-  if( longNote != undefined){
-  const noteWordArr = longNote.split(' ');
-  let i = 0;
-  let noteSize = 0;
-  while(i < noteWordArr.length && noteSize + noteWordArr[i].length < 100){
-    notesResized = notesResized + " " + noteWordArr[i];
-    noteSize += noteWordArr[i].length
-    i += 1;
-  }
-  if(i < noteWordArr.length){
-    notesResized = notesResized + "..."
+function shortNotes(section){
+  const NOTE_CHAR_LIMIT = 100;
+  console.log(section);
+  const shortenedSection = section.map(s => {
+    if(s.notes.length >= NOTE_CHAR_LIMIT){
+      s = {...s, notes : s.notes.slice(0,NOTE_CHAR_LIMIT) + "…"};
+    }
 
-  }
-}
-return(notesResized)
-}
+    return s;
+  })
 
+  return shortenedSection;
+}
 
 app.get("/", (req, res) => {
  let titleSelector=[];
@@ -79,31 +73,34 @@ app.get("/", (req, res) => {
     let randomSelector = Math.floor(Math.random()*sectionSize);
  // coupe des notes aux mot pour limiter leur taille et qu'elle ne perturbent pas la mise en page
     
-    const notesResized = shortNote(dataTitleRegister[oneSection][randomSelector].notes);
 
     titleSelector.push({"sectionName":oneSection,
     "sectionLength":sectionSize,
-    "sectionRandomTitle":dataTitleRegister[oneSection][randomSelector].title,
-    "sectionRandomDate":dataTitleRegister[oneSection][randomSelector].additionDate,
-    "sectionRandomNotes":notesResized
+    "title":dataTitleRegister[oneSection][randomSelector].title,
+    "date":dataTitleRegister[oneSection][randomSelector].additionDate,
+    "notes":dataTitleRegister[oneSection][randomSelector].notes
  })
 
  });
   //console.log(titleSelector);
-  
-  res.send(views.index({navigation: sendNavigation , section: titleSelector }));
+  console.log(titleSelector);
+  const shortenedTitleSelector = shortNotes(titleSelector);
+  console.log(shortenedTitleSelector);
+  res.send(views.index({navigation: sendNavigation , section: shortenedTitleSelector }));
 });
 
 app.get("/section/:sectionName", (req, res) => {
   const section = dataTitleRegister[req.params.sectionName];
-  section.forEach((element) => element.notes = shortNote(element.notes));
-  console.log(section);
+  
+  const shortenedSection = shortNotes(section);
+
+
 
   res.send(
     views.section({
       navigation: sendNavigation,
       name: req.params.sectionName,
-      piece: section,
+      piece: shortenedSection,
     })
   );
 });
