@@ -7,6 +7,10 @@
     <style>
       #notesInput{
       }
+
+      form{
+        display: grid;
+      }
     </style>
   </head>
   <body>
@@ -17,12 +21,13 @@
       <main>
         <form>
         <h1>titre</h1>
-        <label for="titre">Titre</label>
-          <input name="titre">
+         
+        <label for="titre" >Titre</label> 
+          <input name="titre" required/>
           <label for="section">Section</label>
-          <input name="section">
+          <input name="section" required/>
         <label for="notes">Notes suplementaires</label>
-          <input name="notes">
+          <textarea name="notes" rows="5" cols="33"></textarea>
           <input type="submit">
         </form>
       </main>
@@ -57,7 +62,7 @@
         body:JSON.stringify({
           title:form.querySelector('input[name="titre"]').value,
           section:form.querySelector('input[name="section"]').value,
-          note: form.querySelector('input[name="notes"]').value,
+          note: form.querySelector('textarea[name="notes"]').value,
         })
       }).catch(err => console.err("Couldn't fetch ", err));
     }
