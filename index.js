@@ -154,6 +154,11 @@ app.post("/api/add",(req, res) => {
   res.send(200);
 })
 
+app.post("/api/section",(req, res) => {
+
+  
+})
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
