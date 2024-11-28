@@ -155,6 +155,14 @@ app.post("/api/add",(req, res) => {
 })
 
 app.post("/api/section",(req, res) => {
+  const request = req.body;
+  console.log(request.title);
+  console.log(request.section);
+  
+
+  const resPiece = dataTitleRegister[request.section].find(el => el.title == request.title);
+  console.log(resPiece);
+  res.send("message de retour")
 
   
 })
