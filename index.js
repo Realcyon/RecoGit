@@ -162,7 +162,7 @@ app.post("/api/section",(req, res) => {
 
   const resPiece = dataTitleRegister[request.section].find(el => el.title == request.title);
   console.log(resPiece);
-  res.send("message de retour")
+  res.send(resPiece);
 
   
 })

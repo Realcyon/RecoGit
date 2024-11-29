@@ -80,14 +80,14 @@
         <section id="edited">
               <h2 class="titlePiece" id="titleDisplay">titre</h2>
               <p class="datePiece" id="dateDisplay">date</p>
-              <textarea class="notesPiece" name="notes" >dghdfhd</textarea>
+              <textarea class="notesPiece" id="notesDisplay"></textarea>
         </section>
     </main>
     {{>footer}}
   </body>
   <script>
     async function dispalySelection(selectedTitle){
-      document.getElementById("titleDisplay").innerHTML = selectedTitle;
+      
     
     const res = await fetch("/api/section",{
         method:"post",
@@ -101,7 +101,11 @@
         })
         
       })//.catch(err => console.err("Couldn't fetch ", err));
-      console.log(await res.text());
+      const editedPiece = await res.json();
+      console.log(editedPiece)
+      document.getElementById("titleDisplay").innerHTML = editedPiece.title;
+      document.getElementById("dateDisplay").innerHTML = editedPiece.additionDate;
+      document.getElementById("notesDisplay").innerHTML = editedPiece.notes;
     };
     
 
