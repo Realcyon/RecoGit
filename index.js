@@ -154,7 +154,7 @@ app.post("/api/add",(req, res) => {
   res.send(200);
 })
 
-app.post("/api/section",(req, res) => {
+app.post("/api/section/display",(req, res) => {
   const request = req.body;
   console.log(request.title);
   console.log(request.section);
@@ -163,6 +163,19 @@ app.post("/api/section",(req, res) => {
   const resPiece = dataTitleRegister[request.section].find(el => el.title == request.title);
   console.log(resPiece);
   res.send(resPiece);
+
+  
+})
+
+app.post("/api/section/edit",(req, res) => {
+  //const request = req.body;
+  //console.log(request.title);
+  //console.log(request.section);
+  //
+//
+  //const resPiece = dataTitleRegister[request.section].find(el => el.title == request.title);
+  //console.log(resPiece);
+  //res.send(resPiece);
 
   
 })

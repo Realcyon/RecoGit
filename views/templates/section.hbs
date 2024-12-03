@@ -77,11 +77,12 @@
             </a>
           {{/each}}
       </article>
-        <section id="edited">
+        <form id="edited">
               <h2 class="titlePiece" id="titleDisplay">titre</h2>
               <p class="datePiece" id="dateDisplay">date</p>
               <textarea class="notesPiece" id="notesDisplay"></textarea>
-        </section>
+              <input type="submit">
+        </form>
     </main>
     {{>footer}}
   </body>
@@ -89,7 +90,7 @@
     async function dispalySelection(selectedTitle){
       
     
-    const res = await fetch("/api/section",{
+    const res = await fetch("/api/section/display",{
         method:"post",
         headers:{
         "Content-Type":"application/json"
@@ -105,9 +106,32 @@
       console.log(editedPiece)
       document.getElementById("titleDisplay").innerHTML = editedPiece.title;
       document.getElementById("dateDisplay").innerHTML = editedPiece.additionDate;
-      document.getElementById("notesDisplay").innerHTML = editedPiece.notes;
+      document.getElementById("notesDisplay").value = editedPiece.notes;
     };
     
+    const formEdited = document.querySelector('form');
+
+    formEdited.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      console.log(document.getElementById("notesDisplay").value)
+      //const res = await fetch("/api/add/edit",{
+      //  method:"post",
+      //  headers:{
+      //  "Content-Type":"application/json"
+      //  },
+//
+      //  body:JSON.stringify({
+      //    note: document.getElementById.value,
+      //  })
+      //})
+
+      
+    })
+
+
+const typeArea = document.getElementById('notesDisplay');
+typeArea.addEventListener('keydown',console.log('check'));
+typeArea.addEventListener('keyup',console.log('uncheck'));
 
   </script>
 </html>
