@@ -68,7 +68,7 @@
       <article>
           {{#each piece}}
           <a>
-          <section id="card" onclick="dispalySelection('{{this.title}}')" >
+          <section id="card" onclick="displaySelection('{{this.title}}')" >
 
               <h2 class="titlePiece">{{this.title}}</h2>
               <p class="datePiece">{{this.additionDate}}</p>
@@ -87,7 +87,8 @@
     {{>footer}}
   </body>
   <script>
-    async function dispalySelection(selectedTitle){
+    
+    async function displaySelection(selectedTitle){
       
     
     const res = await fetch("/api/section/display",{
@@ -125,13 +126,30 @@
       //  })
       //})
 
-      
-    })
+      save();
+    });
 
 
 const typeArea = document.getElementById('notesDisplay');
-typeArea.addEventListener('keydown',console.log('check'));
+typeArea.addEventListener('change',() => {
+  console.log('check');
+})
 typeArea.addEventListener('keyup',console.log('uncheck'));
+
+
+async function save(){
+  const res = await fetch("/api/section/edit",{
+    method:"post",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      title: document.getElementById('titleDisplay').innerText,
+      section:'{{name}}',
+      notes: document.getElementById("notesDisplay").value
+    })
+  });
+}
 
   </script>
 </html>

@@ -156,28 +156,26 @@ app.post("/api/add",(req, res) => {
 
 app.post("/api/section/display",(req, res) => {
   const request = req.body;
-  console.log(request.title);
-  console.log(request.section);
+  //console.log(request.title);
+  //console.log(request.section);
   
 
   const resPiece = dataTitleRegister[request.section].find(el => el.title == request.title);
-  console.log(resPiece);
+  //console.log(resPiece);
   res.send(resPiece);
 
   
 })
 
 app.post("/api/section/edit",(req, res) => {
-  //const request = req.body;
-  //console.log(request.title);
-  //console.log(request.section);
-  //
-//
-  //const resPiece = dataTitleRegister[request.section].find(el => el.title == request.title);
-  //console.log(resPiece);
-  //res.send(resPiece);
+  const request = req.body;
 
-  
+  const replaceIndex = dataTitleRegister[request.section].findIndex((el) => el.title == request.title)
+  //console.log(replaceIndex);
+
+  dataTitleRegister[request.section][replaceIndex].notes = request.notes
+ 
+  //console.log(dataTitleRegister[request.section]);
 })
 
 app.listen(port, () => {
