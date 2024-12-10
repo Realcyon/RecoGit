@@ -62,9 +62,9 @@
         body:JSON.stringify({
           title:form.querySelector('input[name="titre"]').value,
           section:form.querySelector('input[name="section"]').value,
-          note: form.querySelector('textarea[name="notes"]').value,
+          note: form.querySelector('textarea[name="notes"]').value
         })
-      }).catch(err => console.err("Couldn't fetch ", err));
+      })//.catch(err => console.err("Couldn't fetch ", err));
     }
   })
   </script>

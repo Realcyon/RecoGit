@@ -47,7 +47,7 @@ const sendNavigation = partials.navigation({navSection: Object.keys(dataTitleReg
 
 function shortNotes(section){
   const NOTE_CHAR_LIMIT = 100;
-  console.log(section);
+  //console.log(section);
   const shortenedSection = section.map(s => {
     if(s.notes.length >= NOTE_CHAR_LIMIT){
       s = {...s, notes : s.notes.slice(0,NOTE_CHAR_LIMIT) + "…"};
@@ -65,6 +65,7 @@ app.get("/", (req, res) => {
 // console.log(typeof(dataTitleRegister));
  let listSection = Object.keys(dataTitleRegister);
 
+ listSection.sort((a,b) => dataTitleRegister[b].length - dataTitleRegister[a].length)
  //console.log(listSection);
 
  listSection.forEach(oneSection => {
@@ -82,6 +83,8 @@ app.get("/", (req, res) => {
  })
 
  });
+
+
   //console.log(titleSelector);
   console.log(titleSelector);
   const shortenedTitleSelector = shortNotes(titleSelector);
@@ -117,19 +120,19 @@ app.post("/api/add",(req, res) => {
   const request = req.body;
 
   if(request.title.trim() == ""){
-    res.status(400).send("le titre est obligatoire");
+    res.statusStatus(400).send("le titre est obligatoire");
     return;
   }
 
   if(request.section.trim() == ""){
-    res.status(400).send("la section est obligatoire");
+    res.statusStatus(400).send("la section est obligatoire");
     return;
   }
 
   const storedSection = dataTitleRegister[req.body.section];
   if(storedSection
     && storedSection.map((a)=>a.title).includes(req.body.title)){
-    res.status(400).send("Ce titre est deja en memoire");
+    res.statusStatus(400).send("Ce titre est deja en memoire");
     return;
   }
   // ok, maintenant que les checks sont fait, on passe au reste
@@ -137,14 +140,8 @@ app.post("/api/add",(req, res) => {
   // plutot que d'avoir 2 strategies d'insertion (une quand la section et existe et une quand elle existe pas)
   // on check juste si elle existe pas, et si c'est la cas on la creer
   if(!(Object.keys(dataTitleRegister).includes(request.section))){
+   
     dataTitleRegister[request.section] = [];
-    const newOrder = {}
-    const keyArr = Object.keys(dataTitleRegister);
-    console.log(keyArr)
-    keyArr.sort((a,b) =>{ a - b})
-        .foreach((key) => {newOrder.push(dataTitleRegister[key])});
-    dataTitleRegister = newOrder;
-    console.log(dataTitleRegister.keys())
   }
 
   dataTitleRegister[request.section].push({
@@ -153,12 +150,11 @@ app.post("/api/add",(req, res) => {
     "notes": request.note
   });
 
-  // TODO faudra que j'y pense lundi
   
   fs.writeFileSync(
     path.join(".", "output.json"),JSON.stringify(dataTitleRegister))
 
-  res.send(200);
+  res.sendStatus(200);
 })
 
 app.post("/api/section/display",(req, res) => {
