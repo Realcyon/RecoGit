@@ -138,6 +138,13 @@ app.post("/api/add",(req, res) => {
   // on check juste si elle existe pas, et si c'est la cas on la creer
   if(!(Object.keys(dataTitleRegister).includes(request.section))){
     dataTitleRegister[request.section] = [];
+    const newOrder = {}
+    const keyArr = Object.keys(dataTitleRegister);
+    console.log(keyArr)
+    keyArr.sort((a,b) =>{ a - b})
+        .foreach((key) => {newOrder.push(dataTitleRegister[key])});
+    dataTitleRegister = newOrder;
+    console.log(dataTitleRegister.keys())
   }
 
   dataTitleRegister[request.section].push({
