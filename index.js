@@ -86,16 +86,38 @@ app.get("/", (req, res) => {
 
 
   //console.log(titleSelector);
-  console.log(titleSelector);
+  //console.log(titleSelector);
   const shortenedTitleSelector = shortNotes(titleSelector);
-  console.log(shortenedTitleSelector);
+  //console.log(shortenedTitleSelector);
   res.send(views.index({navigation: sendNavigation , section: shortenedTitleSelector }));
 });
 
 app.get("/section/:sectionName", (req, res) => {
+let shortenedSection = dataTitleRegister[req.params.sectionName];
+
+console.log(req.query);
+if(req.query.sortType=="alpha"||req.query.sortType=="!alpha"){
   const section = dataTitleRegister[req.params.sectionName];
+  console.log(section);
+  const sortedSection = section.sort((a,b) => {
+    const shortestLength = Math.min(a.title.length, b.title.length)
+    const aTitle = a.title.toLowerCase();
+    const bTitle = b.title.toLowerCase();
+    for(let i = 0; i < shortestLength ; i++){
+      if (aTitle[i] != bTitle[i]){
+        if(req.query.sortType=="alpha"){
+          return (aTitle.charCodeAt(i) - bTitle.charCodeAt(i))
+        }else{
+          return (bTitle.charCodeAt(i) - aTitle.charCodeAt(i))
+        }
+      } 
+    }
+    return 0
+  })
   
-  const shortenedSection = shortNotes(section);
+  //console.log(sortedSection);
+  shortenedSection = shortNotes(sortedSection);
+}
 
 
 
@@ -120,19 +142,19 @@ app.post("/api/add",(req, res) => {
   const request = req.body;
 
   if(request.title.trim() == ""){
-    res.statusStatus(400).send("le titre est obligatoire");
+    res.status(400).send("le titre est obligatoire");
     return;
   }
 
   if(request.section.trim() == ""){
-    res.statusStatus(400).send("la section est obligatoire");
+    res.status(400).send("la section est obligatoire");
     return;
   }
 
   const storedSection = dataTitleRegister[req.body.section];
   if(storedSection
     && storedSection.map((a)=>a.title).includes(req.body.title)){
-    res.statusStatus(400).send("Ce titre est deja en memoire");
+    res.status(400).send("Ce titre est deja en memoire");
     return;
   }
   // ok, maintenant que les checks sont fait, on passe au reste
