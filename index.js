@@ -93,33 +93,50 @@ app.get("/", (req, res) => {
 });
 
 app.get("/section/:sectionName", (req, res) => {
-let shortenedSection = dataTitleRegister[req.params.sectionName];
+  let shortenedSection = dataTitleRegister[req.params.sectionName];
 
-console.log(req.query);
-if(req.query.sortType=="alpha"||req.query.sortType=="!alpha"){
-  const section = dataTitleRegister[req.params.sectionName];
-  console.log(section);
-  const sortedSection = section.sort((a,b) => {
-    const shortestLength = Math.min(a.title.length, b.title.length)
-    const aTitle = a.title.toLowerCase();
-    const bTitle = b.title.toLowerCase();
-    for(let i = 0; i < shortestLength ; i++){
-      if (aTitle[i] != bTitle[i]){
-        if(req.query.sortType=="alpha"){
-          return (aTitle.charCodeAt(i) - bTitle.charCodeAt(i))
-        }else{
-          return (bTitle.charCodeAt(i) - aTitle.charCodeAt(i))
-        }
-      } 
+  console.log(req.query);
+  if(req.query.sortType){
+    const section = dataTitleRegister[req.params.sectionName];
+    console.log(section);
+    const sortedSection = section.sort((a,b) => {
+
+    let cleanSortType;
+    if(req.query.sortType[0]=="!"){
+      cleanSortType = req.query.sortType.slice(1);
+    }else{
+      cleanSortType = req.query.sortType;
     }
+
+    if(cleanSortType == "alpha") {
+      const shortestLength = Math.min(a.title.length, b.title.length)
+      const aTitle = a.title.toLowerCase();
+      const bTitle = b.title.toLowerCase();
+      for(let i = 0; i < shortestLength ; i++){
+          if (aTitle[i] != bTitle[i]){
+            return (aTitle.charCodeAt(i) - bTitle.charCodeAt(i))
+          }
+      }
+    }
+
+    if(cleanSortType == "date"){
+      return (a.additionDate - b.additionDate);
+    }
+
     return 0
-  })
-  
-  //console.log(sortedSection);
-  shortenedSection = shortNotes(sortedSection);
-}
+    })
 
+    
+    //console.log(sortedSection);
+    shortenedSection = shortNotes(sortedSection);
+  }
 
+  if(req.query.sortType[0]=="!"){
+    shortenedSection = shortenedSection.reverse();
+  }
+
+  shortenedSection.forEach((piece) => piece.additionDate = piece.additionDate.getTime()
+  )
 
   res.send(
     views.section({
