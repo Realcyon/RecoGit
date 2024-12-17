@@ -135,8 +135,8 @@ app.get("/section/:sectionName", (req, res) => {
     shortenedSection = shortenedSection.reverse();
   }
 
-  shortenedSection.forEach((piece) => piece.additionDate = piece.additionDate.getTime()
-  )
+//  shortenedSection.forEach((piece) => piece.additionDate = piece.additionDate.getTime()
+//  )
 
   res.send(
     views.section({
