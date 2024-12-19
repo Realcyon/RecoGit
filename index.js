@@ -99,14 +99,13 @@ app.get("/section/:sectionName", (req, res) => {
   if(req.query.sortType){
     const section = dataTitleRegister[req.params.sectionName];
     console.log(section);
-    const sortedSection = section.sort((a,b) => {
 
-    let cleanSortType;
+    let cleanSortType = req.query.sortType;
     if(req.query.sortType[0]=="!"){
       cleanSortType = req.query.sortType.slice(1);
-    }else{
-      cleanSortType = req.query.sortType;
     }
+
+    const sortedSection = section.sort((a,b) => {
 
     if(cleanSortType == "alpha") {
       const shortestLength = Math.min(a.title.length, b.title.length)
@@ -114,13 +113,21 @@ app.get("/section/:sectionName", (req, res) => {
       const bTitle = b.title.toLowerCase();
       for(let i = 0; i < shortestLength ; i++){
           if (aTitle[i] != bTitle[i]){
-            return (aTitle.charCodeAt(i) - bTitle.charCodeAt(i))
+            if(req.query.sortType[0]=="!"){
+              return (bTitle.charCodeAt(i) - aTitle.charCodeAt(i))
+            }else{
+              return (aTitle.charCodeAt(i) - bTitle.charCodeAt(i))
+            }
           }
       }
     }
 
     if(cleanSortType == "date"){
-      return (a.additionDate - b.additionDate);
+      if(req.query.sortType[0]=="!"){
+        return (a.additionDate - b.additionDate);
+      }else{
+        return (b.additionDate - a.additionDate);
+      }
     }
 
     return 0
@@ -131,10 +138,16 @@ app.get("/section/:sectionName", (req, res) => {
     shortenedSection = shortNotes(sortedSection);
   }
 
-  if(req.query.sortType[0]=="!"){
-    shortenedSection = shortenedSection.reverse();
+  if(req.query.search){
+    shortenedSection.sort((a,b)=>{
+      a-b
+    })
   }
 
+//  if(req.query.sortType[0]=="!"){
+//    shortenedSection = shortenedSection.reverse();
+//  }
+// probablement mieux de le mettre coté client
 //  shortenedSection.forEach((piece) => piece.additionDate = piece.additionDate.getTime()
 //  )
 

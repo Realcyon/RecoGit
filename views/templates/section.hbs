@@ -71,7 +71,7 @@
           <section id="card" onclick="displaySelection('{{this.title}}')" >
 
               <h2 class="titlePiece">{{this.title}}</h2>
-              <p class="datePiece">{{this.additionDate}}</p>
+              <p class="datePiece" id="{{this.title}}Date">{{this.additionDate}}</p>
               <p class="notesPiece">{{this.notes}}</p>
             </section>
             </a>
@@ -87,6 +87,17 @@
     {{>footer}}
   </body>
   <script>
+
+    const allDate =  Object.values(document.getElementsByClassName("datePiece"));
+
+   allDate.forEach((paragraphe)=>{
+      const rawDate = parseInt(paragraphe.innerHTML)
+      const newDate = new Date(rawDate)
+      const displayDate = newDate.getDate() +' '+ newDate.getMonth() +' '+ newDate.getFullYear()
+      document.getElementById(paragraphe.id).innerHTML=displayDate
+    })
+
+
     
     async function displaySelection(selectedTitle){
       
@@ -105,8 +116,13 @@
       })//.catch(err => console.err("Couldn't fetch ", err));
       const editedPiece = await res.json();
       console.log(editedPiece)
+
+      const rawDate = parseInt(editedPiece.additionDate)
+      const newDate = new Date(rawDate)
+      console.log(Object.keys(newDate))
+      const displayDate = newDate.getDate() +' '+ newDate.getMonth() +' '+ newDate.getFullYear()
       document.getElementById("titleDisplay").innerHTML = editedPiece.title;
-      document.getElementById("dateDisplay").innerHTML = editedPiece.additionDate;
+      document.getElementById("dateDisplay").innerHTML = displayDate;
       document.getElementById("notesDisplay").value = editedPiece.notes;
     };
     
