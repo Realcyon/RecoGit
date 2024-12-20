@@ -51,7 +51,7 @@
       grid-column: 1/3;
       margin: auto;
     }
-    #aditionDateShowcase{
+    .aditionDateShowcase{
       grid-row: 4/5;
       grid-column: 2/4;
       margin: auto;
@@ -80,7 +80,7 @@
        <h3 id="titleSection">{{this.sectionName}}</h3>
        <p id="sectionRange">{{this.sectionLength}}</p>
        <h4 id="titleShowcase">{{this.title}}</h4>
-       <p id="aditionDateShowcase">{{this.date}}</p>
+       <p class="aditionDateShowcase" id="{{this.sectionName}}ShowcaseDate">{{this.date}}</p>
        <p id="noteShowcase">{{this.notes}}</p>
        </section>
        </a>
@@ -89,4 +89,20 @@
     </main>
     {{>footer}}
   </body>
+  <script>
+    const allDate =  Object.values(document.getElementsByClassName("aditionDateShowcase"));
+    console.log()
+
+   allDate.forEach((paragraphe)=>{
+      const rawDate = parseInt(paragraphe.innerHTML)
+      const newDate = new Date(rawDate)
+      const displayDate = newDate.toLocaleDateString(undefined, {
+      //weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      });
+      document.getElementById(paragraphe.id).innerHTML=displayDate
+    })
+  </script>
 </html>

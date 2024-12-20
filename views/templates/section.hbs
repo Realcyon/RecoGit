@@ -88,13 +88,12 @@
   </body>
   <script>
 
-    const allDate =  Object.values(document.getElementsByClassName("datePiece"));
+    const allDates =  Object.values(document.getElementsByClassName("datePiece"));
 
-   allDate.forEach((paragraphe)=>{
+   allDates.forEach((paragraphe)=>{
       const rawDate = parseInt(paragraphe.innerHTML)
-      const newDate = new Date(rawDate)
-      const displayDate = newDate.getDate() +' '+ newDate.getMonth() +' '+ newDate.getFullYear()
-      document.getElementById(paragraphe.id).innerHTML=displayDate
+      
+      document.getElementById(paragraphe.id).innerHTML=transformDate(rawDate)
     })
 
 
@@ -115,14 +114,12 @@
         
       })//.catch(err => console.err("Couldn't fetch ", err));
       const editedPiece = await res.json();
-      console.log(editedPiece)
+      //console.log(editedPiece)
 
       const rawDate = parseInt(editedPiece.additionDate)
-      const newDate = new Date(rawDate)
-      console.log(Object.keys(newDate))
-      const displayDate = newDate.getDate() +' '+ newDate.getMonth() +' '+ newDate.getFullYear()
+
       document.getElementById("titleDisplay").innerHTML = editedPiece.title;
-      document.getElementById("dateDisplay").innerHTML = displayDate;
+      document.getElementById("dateDisplay").innerHTML = transformDate(rawDate);
       document.getElementById("notesDisplay").value = editedPiece.notes;
     };
     
@@ -164,6 +161,16 @@ async function save(){
       notes: document.getElementById("notesDisplay").value
     })
   });
+}
+function transformDate(rawDate){
+  const newDate = new Date(rawDate)
+  const displayDate = newDate.toLocaleDateString(undefined, {
+    //weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+  return displayDate
 }
 
   </script>

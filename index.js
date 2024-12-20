@@ -120,6 +120,7 @@ app.get("/section/:sectionName", (req, res) => {
             }
           }
       }
+      return aTitle.length - bTitle.length
     }
 
     if(cleanSortType == "date"){
