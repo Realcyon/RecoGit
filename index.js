@@ -14,8 +14,21 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 app.use("/public", express.static("public"));
 app.use(bodyParser.json());
-//console.log(path);
-const strFromFile = (path) => fs.readFileSync(path).toString();
+//console.log(path); 
+
+function strFromFile(path, options = {createOnNotFoun: false, defaultContent: ""}){ 
+  try{
+    return fs.readFileSync(path).toString();
+  }catch(err){
+    if(options.createOnNotFoun){
+      fs.writeFileSync(path,options.defaultContent)
+    }
+
+    return options.defaultContent;
+  }
+}
+//strFromFile(path, {createOnNotFoun: true, defaultContent: "{}"});
+//strFromFile(path);
 
 const views = {
   index: Handlebars.compile(
@@ -41,8 +54,15 @@ const partials = {
 };
 
 const dataTitleRegister = JSON.parse(
-  strFromFile(pathJoin(__dirname, "public", "titleRegister.json"))
+  strFromFile(
+    pathJoin(__dirname, "public", "titleRegister.json"),
+    {
+      reateOnNotFoun: true,
+      defaultContent: "{}"
+    }
+  )
 );
+console.log(dataTitleRegister)
 const sendNavigation = partials.navigation({navSection: Object.keys(dataTitleRegister)});
 
 function shortNotes(section){
@@ -64,6 +84,7 @@ app.get("/", (req, res) => {
  //console.log(dataTitleRegister);
 // console.log(typeof(dataTitleRegister));
  let listSection = Object.keys(dataTitleRegister);
+ console.log("keys" , Object.keys(dataTitleRegister))
 
  listSection.sort((a,b) => dataTitleRegister[b].length - dataTitleRegister[a].length)
  //console.log(listSection);
@@ -139,6 +160,8 @@ app.get("/section/:sectionName", (req, res) => {
     shortenedSection = shortNotes(sortedSection);
   }
 
+
+
   if(req.query.search){
     shortenedSection.sort((a,b)=>{
       a-b
@@ -205,7 +228,7 @@ app.post("/api/add",(req, res) => {
 
   
   fs.writeFileSync(
-    path.join(".", "output.json"),JSON.stringify(dataTitleRegister))
+    path.join(".","public", "titleRegister.json"),JSON.stringify(dataTitleRegister))
 
   res.sendStatus(200);
 })
