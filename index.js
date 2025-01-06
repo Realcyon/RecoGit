@@ -183,7 +183,6 @@ app.post("/api/add", (req, res) => {
   // plutot que d'avoir 2 strategies d'insertion (une quand la section et existe et une quand elle existe pas)
   // on check juste si elle existe pas, et si c'est la cas on la creer
   if (!(Object.keys(dataTitleRegister).includes(request.section))) {
-
     dataTitleRegister[request.section] = [];
   }
 
@@ -193,9 +192,7 @@ app.post("/api/add", (req, res) => {
     "notes": request.note
   });
 
-
-  fs.writeFileSync(
-    path.join(".", "public", "titleRegister.json"), JSON.stringify(dataTitleRegister))
+  fs.writeFileSync(path.join(".", "public", "titleRegister.json"), JSON.stringify(dataTitleRegister));
 
   res.sendStatus(200);
 })
@@ -209,8 +206,6 @@ app.post("/api/section/display", (req, res) => {
   const resPiece = dataTitleRegister[request.section].find(el => el.title == request.title);
   //console.log(resPiece);
   res.send(resPiece);
-
-
 })
 
 
