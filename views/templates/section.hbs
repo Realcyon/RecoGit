@@ -22,7 +22,7 @@
         justify-content: center;
       }
 
-      #card{
+      .card{
         height: 100%;
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
@@ -65,7 +65,7 @@
       <article>
         {{#each piece}}
           <a>
-            <section id="card" onclick="displaySelection('{{this.title}}')" >
+            <section class="card" onclick="displaySelection('{{this.title}}')" >
               <h2 class="titlePiece">{{this.title}}</h2>
               <p class="datePiece" id="{{this.title}}Date">{{this.additionDate}}</p>
               <p class="notesPiece">{{this.notes}}</p>
