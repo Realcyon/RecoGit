@@ -113,55 +113,29 @@ app.get("/", (req, res) => {
 
 
 app.get("/section/:sectionName", (req, res) => {
-  let shortenedSection = dataTitleRegister[req.params.sectionName];
+  const section = dataTitleRegister[req.params.sectionName];
 
-  // console.log(req.query);
   if (req.query.sortType) {
-    const section = dataTitleRegister[req.params.sectionName];
-    // console.log(section);
+    const sortType = req.query.sortType;
 
-    let cleanSortType = req.query.sortType;
-    if (req.query.sortType[0] == "!") {
-      cleanSortType = req.query.sortType.slice(1);
+    switch (sortType) {
+      case "alpha":
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#sorting_non-ascii_characters
+        section.sort((a, b) => a.title.localeCompare(b.title));
+      case "date":
+        section.sort((a, b) => b.additionDate - a.additionDate);
+      case "!date":
+        section.sort((a, b) => a.additionDate - b.additionDate);
+      default:
+        console.error("unsuported sorting type " + sortType);
     }
-
-    const sortedSection = section.sort((a, b) => {
-      if (cleanSortType == "alpha") {
-        const shortestLength = Math.min(a.title.length, b.title.length)
-        const aTitle = a.title.toLowerCase();
-        const bTitle = b.title.toLowerCase();
-        for (let i = 0; i < shortestLength; i++) {
-          if (aTitle[i] != bTitle[i]) {
-            if (req.query.sortType[0] == "!") {
-              return (bTitle.charCodeAt(i) - aTitle.charCodeAt(i))
-            } else {
-              return (aTitle.charCodeAt(i) - bTitle.charCodeAt(i))
-            }
-          }
-        }
-        return aTitle.length - bTitle.length
-      }
-
-      if (cleanSortType == "date") {
-        if (req.query.sortType[0] == "!") {
-          return (a.additionDate - b.additionDate);
-        } else {
-          return (b.additionDate - a.additionDate);
-        }
-      }
-
-      return 0
-    })
-
-    //console.log(sortedSection);
-    shortenedSection = shortNotes(sortedSection);
   }
 
-  if (req.query.search) {
-    shortenedSection.sort((a, b) => {
-      a - b
-    })
-  }
+  // if (req.query.search) {
+  //   shortenedSection.sort((a, b) => {
+  //     a - b
+  //   })
+  // }
 
   //  if(req.query.sortType[0]=="!"){
   //    shortenedSection = shortenedSection.reverse();
@@ -174,7 +148,7 @@ app.get("/section/:sectionName", (req, res) => {
     views.section({
       navigation: sendNavigation,
       name: req.params.sectionName,
-      piece: shortenedSection,
+      piece: shortNotes(section)
     })
   );
 });
