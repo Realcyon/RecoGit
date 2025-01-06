@@ -5,8 +5,7 @@
     <link rel="stylesheet" type="text/css" href="/public/global.css" />
     <title>Page d'acceuil</title>
     <style>
-      #notesInput{
-      }
+      #notesInput{}
 
       form{
         display: grid;
@@ -15,57 +14,61 @@
   </head>
   <body>
     {{>header}}
-      <nav>
-        {{{navigation}}}
-      </nav>
-      <main>
-        <form>
-        <h1>titre</h1>
-         
+    <nav>
+      {{{navigation}}}
+    </nav>
+    <main>
+      <form>
+        <h1>titre</h1>    
+
         <label for="titre" >Titre</label> 
-          <input name="titre" required/>
-          <label for="section">Section</label>
-          <input name="section" required/>
+        <input name="titre" required />
+
+        <label for="section">Section</label>
+        <input name="section" required />
+
         <label for="notes">Notes suplementaires</label>
-          <textarea name="notes"></textarea>
-          <input type="submit">
-        </form>
-      </main>
+        <textarea name="notes"></textarea>
+
+        <input type="submit" />
+      </form>
+    </main>
     {{>footer}}
+
+    <script>
+    const form = document.querySelector('form');
+
+    form.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+
+      let errors = [];
+
+      if((form.querySelector('input[name="titre"]').value).trim() == ""){
+        errors.push("titre vide");
+      }
+
+
+      if((form.querySelector('input[name="section"]').value).trim() == ""){
+        errors.push("section vide");
+      }
+
+      if(errors.length != 0){
+        errors.forEach(err => console.error(err));
+      }else{
+        const res = await fetch("/api/add",{
+          method:"post",
+          headers:{
+            "Content-Type":"application/json"
+          },
+
+          body:JSON.stringify({
+            title:form.querySelector('input[name="titre"]').value,
+            section:form.querySelector('input[name="section"]').value,
+            note: form.querySelector('textarea[name="notes"]').value
+          })
+        })//.catch(err => console.err("Couldn't fetch ", err));
+      }
+    })
+    </script>
   </body>
-  <script>
-  const form = document.querySelector('form');
-
-  form.addEventListener("submit", async (ev) => {
-    ev.preventDefault();
-
-    let errors = [];
-
-    if((form.querySelector('input[name="titre"]').value).trim() == ""){
-      errors.push("titre vide");
-    }
-
-
-    if((form.querySelector('input[name="section"]').value).trim() == ""){
-      errors.push("section vide");
-    }
-
-    if(errors.length != 0){
-      errors.forEach(err => console.error(err));
-    }else{
-      const res = await fetch("/api/add",{
-        method:"post",
-        headers:{
-        "Content-Type":"application/json"
-        },
-
-        body:JSON.stringify({
-          title:form.querySelector('input[name="titre"]').value,
-          section:form.querySelector('input[name="section"]').value,
-          note: form.querySelector('textarea[name="notes"]').value
-        })
-      })//.catch(err => console.err("Couldn't fetch ", err));
-    }
-  })
-  </script>
 </html>
