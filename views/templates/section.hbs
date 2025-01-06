@@ -82,11 +82,9 @@
     {{>footer}}
   </body>
   <script>
-    const allDates = Object.values(document.getElementsByClassName("datePiece"));
-
-    allDates.forEach((paragraphe)=>{
-      const rawDate = parseInt(paragraphe.innerHTML);
-      document.getElementById(paragraphe.id).innerHTML=transformDate(rawDate);
+    document.querySelectorAll(".datePiece").forEach((dateEl)=>{
+      const rawDate = parseInt(dateEl.textContent); 
+      dateEl.textContent = transformDate(rawDate);
     })
 
     async function displaySelection(selectedTitle){

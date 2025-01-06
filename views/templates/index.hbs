@@ -84,19 +84,14 @@
     {{>footer}}
   </body>
   <script>
-    const allDate =  Object.values(document.getElementsByClassName("aditionDateShowcase"));
-    console.log()
-
-    allDate.forEach((paragraphe) => {
-      const rawDate = parseInt(paragraphe.innerHTML);
-      const newDate = new Date(rawDate);
-      const displayDate = newDate.toLocaleDateString(undefined, {
+      document.querySelectorAll(".aditionDateShowcase").forEach((dateEl)=>{
+      const rawDate = new Date(parseInt(dateEl.textContent)); 
+      dateEl.textContent = rawDate.toLocaleDateString(undefined, {
         //weekday: 'long',
         year: 'numeric',
         month: 'long',
         day: 'numeric',
       });
-      document.getElementById(paragraphe.id).innerHTML = displayDate;
     })
   </script>
 </html>
