@@ -57,7 +57,7 @@ const dataTitleRegister = JSON.parse(
   strFromFile(
     pathJoin(__dirname, "public", "titleRegister.json"),
     {
-      reateOnNotFoun: true,
+      createOnNotFoun: true,
       defaultContent: "{}"
     }
   )
