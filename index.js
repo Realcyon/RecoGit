@@ -122,6 +122,8 @@ app.get("/section/:sectionName", (req, res) => {
       case "alpha":
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#sorting_non-ascii_characters
         section.sort((a, b) => a.title.localeCompare(b.title));
+      case "!alpha":
+        section.sort((a, b) => -1 * a.title.localeCompare(b.title));
       case "date":
         section.sort((a, b) => b.additionDate - a.additionDate);
       case "!date":
