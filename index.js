@@ -104,10 +104,7 @@ app.get("/", (req, res) => {
     })
   });
 
-  //console.log(titleSelector);
-  //console.log(titleSelector);
   const shortenedTitleSelector = shortNotes(titleSelector);
-  //console.log(shortenedTitleSelector);
   res.send(views.index({ navigation: sendNavigation, section: shortenedTitleSelector }));
 });
 
@@ -219,7 +216,8 @@ app.post("/api/section/edit", (req, res) => {
 
   dataTitleRegister[request.section][replaceIndex].notes = request.notes
 
-  //console.log(dataTitleRegister[request.section]);
+  fs.writeFileSync(path.join(".", "public", "titleRegister.json"), JSON.stringify(dataTitleRegister));
+
 })
 
 

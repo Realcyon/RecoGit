@@ -65,7 +65,7 @@
     <main class="content">
       <article>
         {{#each piece}}
-          <section class="card" onclick="displaySelection('{{this.title}}')" >
+          <section class="card" id="{{this.title}}">
             <h2 class="titlePiece">{{this.title}}</h2>
             <p class="datePiece" id="{{this.title}}Date">{{this.additionDate}}</p>
             <p class="notesPiece">{{this.notes}}</p>
@@ -81,7 +81,23 @@
     </main>
     {{>footer}}
   </body>
+
   <script>
+    let timeoutId;
+    document.getElementById("notesDisplay").addEventListener("input",()=> {
+      //console.log("input");
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(()=>{console.log("delayed");
+        save();
+        },2000);
+    })
+
+    document.querySelectorAll(".card").forEach((el) => {
+      el.addEventListener("click", () => {
+        displaySelection(el.id);
+      })
+    });
+
     document.querySelectorAll(".datePiece").forEach((dateEl)=>{
       const rawDate = parseInt(dateEl.textContent); 
       dateEl.textContent = transformDate(rawDate);
@@ -115,16 +131,6 @@
     formEdited.addEventListener("submit", async (ev) => {
       ev.preventDefault();
       console.log(document.getElementById("notesDisplay").value);
-      //const res = await fetch("/api/add/edit",{
-      //  method:"post",
-      //  headers:{
-      //  "Content-Type":"application/json"
-      //  },
-      //
-      //  body:JSON.stringify({
-      //    note: document.getElementById.value,
-      //  })
-      //})
 
       save();
     });
