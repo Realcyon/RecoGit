@@ -5,18 +5,33 @@
     <link rel="stylesheet" type="text/css" href="/public/global.css" />
     <title>{{name}}</title>
     <style>
+      :root {
+        --black: #4e5883;
+        --size-1: 5px;
+	      --size-2: 8px;
+	      --size-3: 13px;
+	      --size-4: 21px;
+	      --size-5: 34px;
+	      --size-6: 55px;
+	      --size-7: 89px;
+	      --size-8: 144px;
+	      --size-9: 233px;
+	      --size-10: 377px;
+	      --size-11: 610px;
+	      --size-12: 987px;
+      }
       main{
         display:grid;
         grid-template-columns: 60vw 30vw;
         grid-template-rows: 1fr;
-        grid-gap: 10px;
+        /*grid-gap: 10px;*/
         max-width: 90vw
 
       }
 
       article{
         display: grid;
-        grid-gap: 10px;
+        grid-gap: var(--size-3);
         grid-template-columns: repeat(auto-fit, 150px);
         grid-auto-rows: 300px;
         justify-content: center;
@@ -31,8 +46,8 @@
         background-color:whitesmoke;
         color: black;
         margin: 0px;
-      }
 
+      }
 
       .titlePiece{
         grid-row: 3/4;
@@ -50,13 +65,30 @@
         grid-column: 1/4;
         text-align: left;
       }
+
+      .notesDisplay{
+        border-width: 10px;
+        
+        /*border-radius: 50px;*/
+        
+      }
+      
+
       #edited{
         background-color: brown;
         display: grid;
         grid-template-columns: 10vw 10vw 10vw;
         grid-template-rows: 10vw 10vw 10vw 10vw 10vw 10vw;
-        
       }
+      textarea.unsaved{
+        border-color: rgb(255, 0, 0);
+      }
+
+      textarea.saved{
+        border-color: rgb(95, 255, 47);
+        resize: none;
+      }
+
     </style>
   </head>
   <body>
@@ -75,7 +107,7 @@
       <form id="edited">
         <h2 class="titlePiece" id="titleDisplay">titre</h2>
         <p class="datePiece" id="dateDisplay">date</p>
-        <textarea class="notesPiece" id="notesDisplay"></textarea>
+        <textarea class="notesPiece notesDisplay saved" id="notesDisplay"></textarea>
         <input type="submit">
       </form>
     </main>
@@ -83,13 +115,19 @@
   </body>
 
   <script>
-    let timeoutId;
+    console.log(document.styleSheets);
+    //document.styleSheets[1].rules[6].style = `border-color: green; border-width: 10px;`;
+
+    let notTypingId;
     document.getElementById("notesDisplay").addEventListener("input",()=> {
       //console.log("input");
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(()=>{console.log("delayed");
+      document.querySelector("textarea").classList.remove("saved");
+      document.querySelector("textarea").classList.remove("unsaved");
+      clearTimeout(notTypingId);
+      notTypingId = setTimeout(() => {
+        console.log("saved");
         save();
-        },2000);
+      },2000);
     })
 
     document.querySelectorAll(".card").forEach((el) => {
@@ -131,17 +169,28 @@
     formEdited.addEventListener("submit", async (ev) => {
       ev.preventDefault();
       console.log(document.getElementById("notesDisplay").value);
-
       save();
     });
 
 
     const typeArea = document.getElementById('notesDisplay');
     typeArea.addEventListener('change',() => {
+        clearTimeout(notTypingId);
         save();
+      
+        
     })
-
+  let serverRequestDelay = 2000;
     async function save(){
+      noServerResponseId = setTimeout(() => {
+        document.querySelector("textarea").classList.add("unsaved");
+        save();
+        console.log("retry Save");
+        if(serverRequestDelay < 60000){
+          serverRequestDelay = serverRequestDelay*1.5;
+        }
+        console.log(serverRequestDelay);
+      },serverRequestDelay);
       const res = await fetch("/api/section/edit",{
         method:"post",
         headers:{
@@ -153,6 +202,17 @@
           notes: document.getElementById("notesDisplay").value
         })
       });
+      const resultSave = await res.json();
+      console.log(resultSave);
+      if (resultSave == "saveSucessful"){
+        document.querySelector("textarea").classList.add("saved");
+        clearTimeout(noServerResponseId);
+      }else{
+
+        if(resultSave == "saveFail"){
+          document.querySelector("textarea").classList.add("unsaved");
+        }
+      }
     }
 
     function transformDate(rawDate){

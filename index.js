@@ -216,8 +216,17 @@ app.post("/api/section/edit", (req, res) => {
 
   dataTitleRegister[request.section][replaceIndex].notes = request.notes
 
-  fs.writeFileSync(path.join(".", "public", "titleRegister.json"), JSON.stringify(dataTitleRegister));
-
+  fs.writeFile(path.join(".", "public", "titleRegister.json"), JSON.stringify(dataTitleRegister),(err) => {
+    if(err){
+      res.send(JSON.stringify("saveFail"));
+      console.log("saveError");
+    }else{
+      res.send(JSON.stringify("saveSucessful"));
+      console.log("savedSucessfully");
+    }
+  });
+  //Renvoyer un message aux client pour l'informer si la sauvergarde a été efféctuer ou si elle a échoué
+  
 })
 
 
