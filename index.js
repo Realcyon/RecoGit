@@ -8,7 +8,7 @@ const port = 3000;
 
 import { dirname, join as pathJoin } from "node:path";
 import { fileURLToPath } from "node:url";
-import path from "path";
+import path from "path";  
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -65,7 +65,7 @@ const dataTitleRegister = JSON.parse(
 const sendNavigation = partials.navigation({ navSection: Object.keys(dataTitleRegister) });
 
 function shortNotes(section) {
-  const NOTE_CHAR_LIMIT = 100;
+  const NOTE_CHAR_LIMIT = 75;
   //console.log(section);
   const shortenedSection = section.map(s => {
     if (s.notes.length >= NOTE_CHAR_LIMIT) {
@@ -112,19 +112,24 @@ app.get("/", (req, res) => {
 app.get("/section/:sectionName", (req, res) => {
   const section = dataTitleRegister[req.params.sectionName];
 
-  if (req.query.sortType) {
+  if (1==1) {//req.query.sortType
     const sortType = req.query.sortType;
-
+    console.log(sortType);
+    console.log(typeof sortType);
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#sorting_non-ascii_characters
     switch (sortType) {
       case "alpha":
-        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#sorting_non-ascii_characters
         section.sort((a, b) => a.title.localeCompare(b.title));
+        break;
       case "!alpha":
         section.sort((a, b) => -1 * a.title.localeCompare(b.title));
+        break;
       case "date":
         section.sort((a, b) => b.additionDate - a.additionDate);
+        break;
       case "!date":
         section.sort((a, b) => a.additionDate - b.additionDate);
+        break;
       default:
         console.error("unsuported sorting type " + sortType);
     }

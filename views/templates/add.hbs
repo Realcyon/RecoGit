@@ -10,6 +10,10 @@
       form{
         display: grid;
       }
+      textarea{
+        resize: none;
+        height: 200px;
+      }
     </style>
   </head>
   <body>
@@ -22,13 +26,13 @@
         <h1>titre</h1>    
 
         <label for="titre" >Titre</label> 
-        <input name="titre" required />
+        <input name="titre" required autocomplete="off"/>
 
         <label for="section">Section</label>
-        <input name="section" required />
+        <input name="section" required autocomplete="off"/>
 
         <label for="notes">Notes suplementaires</label>
-        <textarea name="notes"></textarea>
+        <textarea name="notes" autocomplete="off"></textarea>
 
         <input type="submit" />
       </form>

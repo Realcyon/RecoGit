@@ -71,7 +71,7 @@ a {
 main {
   min-height: 69vh;
   max-width: 790px;
-  background-color: beige;
+  background-color: rgb(255, 255, 255);
   margin-top: 0px;
   width: minmax(150px, 790px);
   margin-left: auto;
