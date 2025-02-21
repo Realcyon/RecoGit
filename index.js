@@ -67,6 +67,7 @@ const sendNavigation = partials.navigation({ navSection: Object.keys(dataTitleRe
 function shortNotes(section) {
   const NOTE_CHAR_LIMIT = 75;
   //console.log(section);
+  
   const shortenedSection = section.map(s => {
     if (s.notes.length >= NOTE_CHAR_LIMIT) {
       s = { ...s, notes: s.notes.slice(0, NOTE_CHAR_LIMIT) + "…" };
@@ -92,9 +93,7 @@ app.get("/", (req, res) => {
     const sectionSize = dataTitleRegister[oneSection].length;
 
     let randomSelector = Math.floor(Math.random() * sectionSize);
-    // coupe des notes aux mot pour limiter leur taille et qu'elle ne perturbent pas la mise en page
-
-
+    
     titleSelector.push({
       "sectionName": oneSection,
       "sectionLength": sectionSize,
@@ -216,10 +215,11 @@ app.post("/api/section/display", (req, res) => {
 app.post("/api/section/edit", (req, res) => {
   const request = req.body;
 
-  const replaceIndex = dataTitleRegister[request.section].findIndex((el) => el.title == request.title)
+  const replaceIndex = dataTitleRegister[request.section].findIndex((el) => el.oldTitle == request.title)
   //console.log(replaceIndex);
 
   dataTitleRegister[request.section][replaceIndex].notes = request.notes
+  dataTitleRegister[request.section][replaceIndex].title = request.newTitle
 
   fs.writeFile(path.join(".", "public", "titleRegister.json"), JSON.stringify(dataTitleRegister),(err) => {
     if(err){
@@ -233,6 +233,17 @@ app.post("/api/section/edit", (req, res) => {
   //Renvoyer un message aux client pour l'informer si la sauvergarde a été efféctuer ou si elle a échoué
   
 })
+
+app.post("/api/section/delete", (req, res) => {
+  const titleDelete = req.body.title;
+  const section = req.body.section;
+  console.log(titleDelete);
+  const deleteIndex = dataTitleRegister[section].findIndex((el) => el.title == titleDelete);
+  dataTitleRegister[section].splice(deleteIndex,1)
+  fs.writeFile(path.join(".", "public", "titleRegister.json"), JSON.stringify(dataTitleRegister),(err) => {
+    
+  });
+});
 
 
 app.listen(port, () => {

@@ -106,20 +106,24 @@
         {{/each}}
       </article>
       <form id="edited">
-        <h2 class="titlePiece" id="titleDisplay"></h2>
+        <input class="titlePiece" id="titleDisplay">
         <p class="datePiece" id="dateDisplay"></p>
         <textarea class="notesPiece notesDisplay saved" id="notesDisplay" autocomplete="off" disabled></textarea>
         <input type="submit">
+        <input type="button" value="delete" id="deleteButton">
+        <input type="button" value="new" id="createButton">
       </form>
     </main>
     {{>footer}}
   </body>
-
+  
   <script>
+
+    let currentEditedPiece;
     console.log(document.styleSheets);
     //document.styleSheets[1].rules[6].style = `border-color: green; border-width: 10px;`;
 
-    let notTypingId;
+    let notTypingId; // creation of timout id
     document.getElementById("notesDisplay").addEventListener("input",()=> {
       //console.log("input");
       document.querySelector("textarea").classList.remove("saved");
@@ -160,11 +164,13 @@
       const editedPiece = await res.json();
       //console.log(editedPiece)
 
-      const rawDate = parseInt(editedPiece.additionDate)
+      const rawDate = parseInt(editedPiece.additionDate);
 
-      document.getElementById("titleDisplay").innerHTML = editedPiece.title;
+      currentEditedPiece = editedPiece.title; 
+      document.getElementById("titleDisplay").value = editedPiece.title;
       document.getElementById("dateDisplay").innerHTML = transformDate(rawDate);
       document.getElementById("notesDisplay").value = editedPiece.notes;
+      
     };
     
     const formEdited = document.querySelector('form');
@@ -174,6 +180,24 @@
       console.log(document.getElementById("notesDisplay").value);
       save();
     });
+
+
+    formEdited.querySelector("#deleteButton").addEventListener("click" ,async (ev) => {
+      console.log("deletePiece");
+      const titleDelete = formEdited.querySelector("#titleDisplay").innerHTML;
+      console.log(titleDelete);
+      const res = await fetch("/api/section/delete",{
+        method:"post",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          title:titleDelete,
+          section:'{{name}}'
+        })
+      });
+
+    })
 
 
     const typeArea = document.getElementById('notesDisplay');
@@ -200,7 +224,8 @@
           "Content-Type":"application/json"
         },
         body:JSON.stringify({
-          title: document.getElementById('titleDisplay').innerText,
+          newTitle: document.getElementById('titleDisplay').innerText,
+          oldTitle: currentEditedPiece,
           section:'{{name}}',
           notes: document.getElementById("notesDisplay").value
         })

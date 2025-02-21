@@ -68,6 +68,7 @@ a {
   grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 2fr;
   text-align: center;
 }
+
 main {
   min-height: 69vh;
   max-width: 790px;
