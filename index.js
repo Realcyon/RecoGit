@@ -65,15 +65,16 @@ const dataTitleRegister = JSON.parse(
 const sendNavigation = partials.navigation({ navSection: Object.keys(dataTitleRegister) });
 
 function shortNotes(section) {
+
   const NOTE_CHAR_LIMIT = 75;
-  //console.log(section);
-  
-  const shortenedSection = section.map(s => {
-    if (s.notes.length >= NOTE_CHAR_LIMIT) {
-      s = { ...s, notes: s.notes.slice(0, NOTE_CHAR_LIMIT) + "…" };
+  const sectionKeys = Object.keys(section);
+
+  const shortenedSection = sectionKeys.map(s => {
+    if (section[s].notes.length >= NOTE_CHAR_LIMIT) {
+      section[s] = { ...section[s], notes: section[s].notes.slice(0, NOTE_CHAR_LIMIT) + "…" };
     }
 
-    return s;
+    return section[s];
   })
 
   return shortenedSection;
@@ -90,20 +91,29 @@ app.get("/", (req, res) => {
   //console.log(listSection);
 
   listSection.forEach(oneSection => {
-    const sectionSize = dataTitleRegister[oneSection].length;
+    const section = dataTitleRegister[oneSection];
+    const sectionSize = Object.keys(section).length;
 
     let randomSelector = Math.floor(Math.random() * sectionSize);
+    const randomKey = Object.keys(section)[randomSelector];
     
+    console.log(randomSelector);
+    console.log(randomKey);
+    console.log("temoin");
+    console.log(section);
+    console.log(section[randomKey].title);
+
     titleSelector.push({
       "sectionName": oneSection,
       "sectionLength": sectionSize,
-      "title": dataTitleRegister[oneSection][randomSelector].title,
-      "date": dataTitleRegister[oneSection][randomSelector].additionDate,
-      "notes": dataTitleRegister[oneSection][randomSelector].notes
+      "title": section[randomKey].title,
+      "date": section[randomKey].additionDate,
+      "notes": section[randomKey].notes
     })
   });
 
   const shortenedTitleSelector = shortNotes(titleSelector);
+  console.log(shortenedTitleSelector)
   res.send(views.index({ navigation: sendNavigation, section: shortenedTitleSelector }));
 });
 
@@ -112,22 +122,25 @@ app.get("/section/:sectionName", (req, res) => {
   const section = dataTitleRegister[req.params.sectionName];
 
   if (1==1) {//req.query.sortType
+
     const sortType = req.query.sortType;
+    const sectionKeys = Object.keys(section);
+
     console.log(sortType);
     console.log(typeof sortType);
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#sorting_non-ascii_characters
     switch (sortType) {
       case "alpha":
-        section.sort((a, b) => a.title.localeCompare(b.title));
+        sectionKeys.sort((a, b) => section[a].title.localeCompare(section[b].title));
         break;
       case "!alpha":
-        section.sort((a, b) => -1 * a.title.localeCompare(b.title));
+        sectionKeys.sort((a, b) => -1 * section[a].title.localeCompare(section[b].title));
         break;
       case "date":
-        section.sort((a, b) => b.additionDate - a.additionDate);
+        sectionKeys.sort((a, b) => section[b].additionDate - section[a].additionDate);
         break;
       case "!date":
-        section.sort((a, b) => a.additionDate - b.additionDate);
+        sectionKeys.sort((a, b) => section[a].additionDate - section[b].additionDate);
         break;
       default:
         console.error("unsuported sorting type " + sortType);
