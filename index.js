@@ -73,7 +73,7 @@ function shortNotes(section) {
     if (section[s].notes.length >= NOTE_CHAR_LIMIT) {
       section[s] = { ...section[s], notes: section[s].notes.slice(0, NOTE_CHAR_LIMIT) + "…" };
     }
-
+    section[s].id = s;
     return section[s];
   })
 
@@ -146,7 +146,6 @@ app.get("/section/:sectionName", (req, res) => {
         console.error("unsuported sorting type " + sortType);
     }
   }
-
   // if (req.query.search) {
   //   shortenedSection.sort((a, b) => {
   //     a - b
@@ -167,12 +166,13 @@ app.get("/section/:sectionName", (req, res) => {
       piece: shortNotes(section)
     })
   );
+  console.log(shortNotes(section))
 });
 
 
-app.get("/add", (req, res) => {
-  res.send(views.add({ navigation: sendNavigation }));
-});
+//app.get("/add", (req, res) => {
+//  res.send(views.add({ navigation: sendNavigation }));
+//});
 
 
 app.post("/api/add", (req, res) => {
@@ -216,11 +216,7 @@ app.post("/api/add", (req, res) => {
 
 app.post("/api/section/display", (req, res) => {
   const request = req.body;
-  //console.log(request.title);
-  //console.log(request.section);
-
-  const resPiece = dataTitleRegister[request.section].find(el => el.title == request.title);
-  //console.log(resPiece);
+  const resPiece = dataTitleRegister[request.section][request.id];
   res.send(resPiece);
 })
 
@@ -228,11 +224,11 @@ app.post("/api/section/display", (req, res) => {
 app.post("/api/section/edit", (req, res) => {
   const request = req.body;
 
-  const replaceIndex = dataTitleRegister[request.section].findIndex((el) => el.oldTitle == request.title)
+  //const replaceIndex = dataTitleRegister[request.section].findIndex((el) => el.oldTitle == request.title)
   //console.log(replaceIndex);
 
-  dataTitleRegister[request.section][replaceIndex].notes = request.notes
-  dataTitleRegister[request.section][replaceIndex].title = request.newTitle
+  dataTitleRegister[request.section][request.id].notes = request.notes
+  dataTitleRegister[request.section][request.id].title = request.title
 
   fs.writeFile(path.join(".", "public", "titleRegister.json"), JSON.stringify(dataTitleRegister),(err) => {
     if(err){

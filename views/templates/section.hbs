@@ -98,7 +98,7 @@
     <main class="content">
       <article>
         {{#each piece}}
-          <section class="card" id="{{this.title}}">
+          <section class="card" id="{{this.id}}">
             <h2 class="titlePiece">{{this.title}}</h2>
             <p class="datePiece" id="{{this.title}}Date">{{this.additionDate}}</p>
             <p class="notesPiece">{{this.notes}}</p>
@@ -119,7 +119,7 @@
   
   <script>
 
-    let currentEditedPiece;
+    let editedPieceId;
     console.log(document.styleSheets);
     //document.styleSheets[1].rules[6].style = `border-color: green; border-width: 10px;`;
 
@@ -144,11 +144,11 @@
     });
 
     document.querySelectorAll(".datePiece").forEach((dateEl)=>{
-      const rawDate = parseInt(dateEl.textContent); 
+      const rawDate = parseInt(dateEl.textContent);
       dateEl.textContent = transformDate(rawDate);
     })
 
-    async function displaySelection(selectedTitle){
+    async function displaySelection(selectedId){
       const res = await fetch("/api/section/display",{
         method:"post",
         headers:{
@@ -156,7 +156,7 @@
         },
 
         body:JSON.stringify({
-          title:selectedTitle,
+          id:selectedId,
           section:'{{name}}'
         })
         
@@ -166,7 +166,7 @@
 
       const rawDate = parseInt(editedPiece.additionDate);
 
-      currentEditedPiece = editedPiece.title; 
+      editedPieceId = selectedId; 
       document.getElementById("titleDisplay").value = editedPiece.title;
       document.getElementById("dateDisplay").innerHTML = transformDate(rawDate);
       document.getElementById("notesDisplay").value = editedPiece.notes;
@@ -180,7 +180,6 @@
       console.log(document.getElementById("notesDisplay").value);
       save();
     });
-
 
     formEdited.querySelector("#deleteButton").addEventListener("click" ,async (ev) => {
       console.log("deletePiece");
@@ -208,6 +207,8 @@
         
     })
   let serverRequestDelay = 2000;
+
+
     async function save(){
       noServerResponseId = setTimeout(() => {
         document.querySelector("textarea").classList.add("unsaved");
@@ -224,9 +225,9 @@
           "Content-Type":"application/json"
         },
         body:JSON.stringify({
-          newTitle: document.getElementById('titleDisplay').innerText,
-          oldTitle: currentEditedPiece,
+          id:editedPieceId,
           section:'{{name}}',
+          title: document.getElementById('titleDisplay').value,
           notes: document.getElementById("notesDisplay").value
         })
       });
