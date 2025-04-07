@@ -224,18 +224,29 @@ app.post("/api/section/display", (req, res) => {
 app.post("/api/section/edit", (req, res) => {
   const request = req.body;
 
+  if(Object.keys(dataTitleRegister[request.section]).includes(request.id)){ 
+  }else{
+    console.log("notInside");
+    dataTitleRegister[request.section][request.id] = {
+      "title": "",
+      "additionDate": Date.now(),  // toujours les stocker sous forme de timestamp UTC+0 comme ca on peut generer toutes les version "lisibles par les humains" a partir de la. Mais on stocke la version "neutre" avec toutes les infos et puis c'est un entien 32bits, pas une string
+      "notes": ""}
+      console.log(dataTitleRegister);
+    }
   //const replaceIndex = dataTitleRegister[request.section].findIndex((el) => el.oldTitle == request.title)
   //console.log(replaceIndex);
+ //console.log(dataTitleRegister);
+  dataTitleRegister[request.section][request.id].notes = request.notes;
+  dataTitleRegister[request.section][request.id].title = request.title;
 
-  dataTitleRegister[request.section][request.id].notes = request.notes
-  dataTitleRegister[request.section][request.id].title = request.title
-
-  fs.writeFile(path.join(".", "public", "titleRegister.json"), JSON.stringify(dataTitleRegister),(err) => {
+  fs.writeFile(path.join(".", "public", "titleRegister.json"), JSON.stringify(dataTitleRegister, null, 2),(err) => {
     if(err){
-      res.send(JSON.stringify("saveFail"));
+      const responseToSave = {goal:"save",id:req.body.postId,sucess:false}
+      res.send(JSON.stringify(responseToSave));
       console.log("saveError");
     }else{
-      res.send(JSON.stringify("saveSucessful"));
+      const responseToSave = {goal:"save",id:req.body.postId,sucess:true}
+      res.send(JSON.stringify(responseToSave));
       console.log("savedSucessfully");
     }
   });
@@ -244,13 +255,25 @@ app.post("/api/section/edit", (req, res) => {
 })
 
 app.post("/api/section/delete", (req, res) => {
-  const titleDelete = req.body.title;
+  const idDelete = req.body.id;
   const section = req.body.section;
-  console.log(titleDelete);
-  const deleteIndex = dataTitleRegister[section].findIndex((el) => el.title == titleDelete);
-  dataTitleRegister[section].splice(deleteIndex,1)
+  //console.log(titleDelete);
+  //const deleteIndex = dataTitleRegister[section].findIndex((el) => el.title == titleDelete);
+  //dataTitleRegister[section].splice(deleteIndex,1)
+  delete dataTitleRegister[section][idDelete];
+  console.log("deleting");
   fs.writeFile(path.join(".", "public", "titleRegister.json"), JSON.stringify(dataTitleRegister),(err) => {
-    
+    if(err){
+      const responseToDelete = {goal:"delete",id:req.body.postId,sucess:false}
+      res.send(JSON.stringify(responseToDelete));
+
+      console.log("deleteError");
+    }else{
+      const responseToDelete = {goal:"delete",id:req.body.postId,sucess:true}
+      res.send(JSON.stringify(responseToDelete));
+
+      console.log("deleteSucessfully");
+    }
   });
 });
 

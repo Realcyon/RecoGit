@@ -106,7 +106,7 @@
         {{/each}}
       </article>
       <form id="edited">
-        <input class="titlePiece" id="titleDisplay">
+        <input class="titlePiece" id="titleDisplay" autocomplete="off" disabled>
         <p class="datePiece" id="dateDisplay"></p>
         <textarea class="notesPiece notesDisplay saved" id="notesDisplay" autocomplete="off" disabled></textarea>
         <input type="submit">
@@ -120,7 +120,7 @@
   <script>
 
     let editedPieceId;
-    console.log(document.styleSheets);
+    //console.log(document.styleSheets);
     //document.styleSheets[1].rules[6].style = `border-color: green; border-width: 10px;`;
 
     let notTypingId; // creation of timout id
@@ -130,8 +130,13 @@
       document.querySelector("textarea").classList.remove("unsaved");
       clearTimeout(notTypingId);
       notTypingId = setTimeout(() => {
-        console.log("saved");
-        save();
+        //console.log("saved");
+        queuer("/api/section/edit",
+          {id:editedPieceId,
+          section:'{{name}}',
+          title: document.getElementById('titleDisplay').value,
+          notes: document.getElementById("notesDisplay").value}
+        );
       },2000);
     })
 
@@ -139,6 +144,7 @@
       el.addEventListener("click", () => {
         displaySelection(el.id);
         document.getElementById("notesDisplay").removeAttribute("disabled");
+        document.getElementById("titleDisplay").removeAttribute("disabled");
 
       })
     });
@@ -176,74 +182,89 @@
     const formEdited = document.querySelector('form');
 
     formEdited.addEventListener("submit", async (ev) => {
-      ev.preventDefault();
-      console.log(document.getElementById("notesDisplay").value);
-      save();
+      if(editedPieceId){
+        ev.preventDefault();
+        //console.log(document.getElementById("notesDisplay").value);
+        queuer("/api/section/edit",
+          {id:editedPieceId,
+          section:'{{name}}',
+          title: document.getElementById('titleDisplay').value,
+          notes: document.getElementById("notesDisplay").value}
+        );
+      }
     });
 
     formEdited.querySelector("#deleteButton").addEventListener("click" ,async (ev) => {
-      console.log("deletePiece");
-      const titleDelete = formEdited.querySelector("#titleDisplay").innerHTML;
-      console.log(titleDelete);
-      const res = await fetch("/api/section/delete",{
-        method:"post",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-          title:titleDelete,
+      //deleteF();  /!\
+      queuer("/api/section/delete",{
+          id: editedPieceId,
           section:'{{name}}'
-        })
-      });
-
+        });
     })
+    
+    formEdited.querySelector("#createButton").addEventListener("click" ,async (ev) => {
+      document.getElementById("notesDisplay").removeAttribute("disabled");
+      document.getElementById("titleDisplay").removeAttribute("disabled");
+      let listId = Array.from(document.querySelectorAll(".card")).map((el)=> Number(el.id));
+      editedPieceId = Math.max(...listId)+1;
+      document.querySelector("#titleDisplay").value = "";
+      document.querySelector("#notesDisplay").value = "";
+      //console.log(Math.max(...listId));
+      //console.log(listId);
+    });
 
 
     const typeArea = document.getElementById('notesDisplay');
     typeArea.addEventListener('change',() => {
         clearTimeout(notTypingId);
-        save();
+        queuer("/api/section/edit",
+          {id:editedPieceId,
+          section:'{{name}}',
+          title: document.getElementById('titleDisplay').value,
+          notes: document.getElementById("notesDisplay").value}
+        );
       
         
     })
   let serverRequestDelay = 2000;
 
 
-    async function save(){
-      noServerResponseId = setTimeout(() => {
-        document.querySelector("textarea").classList.add("unsaved");
-        save();
-        console.log("retry Save");
-        if(serverRequestDelay < 60000){
-          serverRequestDelay = serverRequestDelay*1.5;
-        }
-        console.log(serverRequestDelay);
-      },serverRequestDelay);
-      const res = await fetch("/api/section/edit",{
-        method:"post",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-          id:editedPieceId,
-          section:'{{name}}',
-          title: document.getElementById('titleDisplay').value,
-          notes: document.getElementById("notesDisplay").value
-        })
-      });
-      const resultSave = await res.json();
-      console.log(resultSave);
-      if (resultSave == "saveSucessful"){
-        document.querySelector("textarea").classList.add("saved");
-        clearTimeout(noServerResponseId);
-      }else{
-
-        if(resultSave == "saveFail"){
-          document.querySelector("textarea").classList.add("unsaved");
-        }
-      }
-    }
-
+//    async function save(){
+//      noServerResponseId = setTimeout(() => {
+//        document.querySelector("textarea").classList.add("unsaved");
+//        
+//        //save();
+//        console.log("retry Save");
+//        if(serverRequestDelay < 60000){
+//          serverRequestDelay = serverRequestDelay*1.5;
+//        }
+//        console.log(serverRequestDelay);
+//      },serverRequestDelay);
+//      const res = await fetch("/api/section/edit",{
+//        method:"post",
+//        headers:{
+//          "Content-Type":"application/json"
+//        },
+//        body:JSON.stringify({
+//          id:editedPieceId,
+//          section:'{{name}}',
+//          title: document.getElementById('titleDisplay').value,
+//          notes: document.getElementById("notesDisplay").value
+//        })
+//      });
+//      const resultSave = await res.json();
+//      console.log(resultSave);
+//      if (resultSave == "saveSucessful"){
+//        document.querySelector("textarea").classList.add("saved");
+//        clearTimeout(noServerResponseId);
+//      }else{
+//
+//        if(resultSave == "saveFail"){
+//          document.querySelector("textarea").classList.add("unsaved");
+//        }
+//      }
+//    }
+//
     function transformDate(rawDate){
       const newDate = new Date(rawDate)
       const displayDate = newDate.toLocaleDateString(undefined, {
@@ -254,5 +275,100 @@
       });
       return displayDate
     }
+
+
+//    async function deleteF(){
+//      document.getElementById(editedPieceId).style.display = "none";
+//      noServerResponseIdDelete = setTimeout(() => {
+//        
+//        deleteF();
+//        console.log("retry delete");
+//        if(serverRequestDelay < 60000){
+//          serverRequestDelay = serverRequestDelay*1.5;
+//        }
+//        console.log(serverRequestDelay);
+//      },serverRequestDelay);
+//     const res = await fetch("/api/section/delete",{
+//        method:"post",
+//        headers:{
+//          "Content-Type":"application/json"
+//        },
+//        body:JSON.stringify({
+//          id: editedPieceId,
+//          section:'{{name}}'
+//        })
+//      });
+//
+//      const resultDelete = await res.json();
+//      if (resultDelete == "deleteSucessfull"){
+//        document.getElementById(editedPieceId).remove;
+//        console.log("removed");
+//        clearTimeout(noServerResponseIdDelete);
+//      }else{
+//        document.getElementById(editedPieceId).style.display = "none";
+//        console.log("deleteErr");
+//      }
+//    
+//    }
+
+    
+    let queue = []
+    let isTimeOutActive = false;
+
+
+    function queuer(adress,body){
+      body.postId = (Math.floor(Math.random()*1000000000));
+      queue.push({link:adress,body:body});
+      if (!isTimeOutActive){
+        looper();
+      };
+    }
+
+    function looper(){
+      queue.forEach((el)=>post(el.link,el.body,el.postId));
+      noServerResponseId = setTimeout(() => {
+        looper()
+        if(serverRequestDelay < 60000){
+          serverRequestDelay = serverRequestDelay*1.5;
+        }
+      },serverRequestDelay);
+//si liste vide reset de la fonction
+    }
+
+    async function post(adress, bodyContent){
+      const res = await fetch(adress,{
+        method:"post",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify(
+          bodyContent
+        )
+      });
+      const result = await res.json();
+        if(result.sucess){
+          switch(result.goal){
+            case "delete":
+            removeQueue(result.id);
+            break;
+            case "save":
+            console.log("save" + result.id);
+            removeQueue(result.id);
+            break;
+            default:
+            console.err("unsuported goal " + result.goal)
+          }
+        }
+      console.log(result);
+      return(result);
+      
+      //si reussi coupe l'element de queue si queue vide timeOut break + isTimeOutActive = false
+    }
+
+    function removeQueue(queueId){
+      const completedKey = queue.findIndex((el)=> el.body.postId == queueId);
+      queue.splice(completedKey,1);
+    }
+
   </script>
 </html>
