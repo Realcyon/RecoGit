@@ -20,13 +20,21 @@ app.use("/", (req, res, next) => {
     console.log("sending");
     console.log(body);
     body = body.replace(/<\/body>/gi, `
-        <script>
-        const socket = new WebSocket("ws://localhost:8080");
-        socket.addEventListener("message", (event) => {
-          if(event.data == "r"){
-            location.reload();
-          }
-        });
+        <script type="module">
+        let socket = null;
+        connect();
+
+        function connect(){
+          socket = new WebSocket("ws://localhost:8080");
+          socket.addEventListener("message", (event) => {
+            if(event.data == "r"){
+              location.reload();
+            }
+          });
+          socket.addEventListener("close",(event) => {
+            connect();
+          })
+        }
         </script>
         </body>`)
     originalSend.call(this, body);
