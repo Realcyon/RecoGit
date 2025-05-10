@@ -1,4 +1,4 @@
 {
   "ext": "*.hbs *.js *.mjs *.cjs *.json",
-  "ignore": ["**.json"]
+  "ignore": ["**.json", "views", "public"]
 }

@@ -14,6 +14,25 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 app.use("/public", express.static("public"));
 app.use(bodyParser.json());
+app.use("/", (req, res, next) => {
+  const originalSend = res.send;
+  res.send = function (body) {
+    console.log("sending");
+    console.log(body);
+    body = body.replace(/<\/body>/gi, `
+        <script>
+        const socket = new WebSocket("ws://localhost:8080");
+        socket.addEventListener("message", (event) => {
+          if(event.data == "r"){
+            location.reload();
+          }
+        });
+        </script>
+        </body>`)
+    originalSend.call(this, body);
+  };
+  next();
+})
 //console.log(path); 
 
 function strFromFile(path, options = { createOnNotFoun: false, defaultContent: "" }) {
