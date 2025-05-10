@@ -82,8 +82,7 @@
       </article>
     </main>
     {{>footer}}
-  </body>
-  <script>
+      <script>
       document.querySelectorAll(".aditionDateShowcase").forEach((dateEl)=>{
       const rawDate = new Date(parseInt(dateEl.textContent)); 
       dateEl.textContent = rawDate.toLocaleDateString(undefined, {
@@ -94,4 +93,5 @@
       });
     })
   </script>
+  </body>
 </html>
