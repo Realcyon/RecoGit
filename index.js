@@ -13,9 +13,13 @@ import path from "path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+const isDev = process.argv.includes("dev");
+
 app.use("/public", express.static("public"));
 app.use(bodyParser.json());
+if (isDev) {
   app.use(livereload);
+}
 
 function strFromFile(path, options = { createOnNotFoun: false, defaultContent: "" }) {
   try {
