@@ -2,6 +2,7 @@ import express from "express";
 import fs from "fs";
 import Handlebars from "handlebars";
 import bodyParser from "body-parser";
+import livereload from "./middlewares/livereload.js";
 
 const app = express();
 const port = 3000;
@@ -14,34 +15,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 app.use("/public", express.static("public"));
 app.use(bodyParser.json());
-app.use("/", (req, res, next) => {
-  const originalSend = res.send;
-  res.send = function (body) {
-    console.log("sending");
-    console.log(body);
-    body = body.replace(/<\/body>/gi, `
-        <script type="module">
-        let socket = null;
-        connect();
-
-        function connect(){
-          socket = new WebSocket("ws://localhost:8080");
-          socket.addEventListener("message", (event) => {
-            if(event.data == "r"){
-              location.reload();
-            }
-          });
-          socket.addEventListener("close",(event) => {
-            connect();
-          })
-        }
-        </script>
-        </body>`)
-    originalSend.call(this, body);
-  };
-  next();
-})
-//console.log(path); 
+  app.use(livereload);
 
 function strFromFile(path, options = { createOnNotFoun: false, defaultContent: "" }) {
   try {
