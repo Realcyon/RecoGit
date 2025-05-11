@@ -1,5 +1,6 @@
 import express from "express";
 import fs from "fs";
+import { strFromFile } from "./utils.js";
 import Handlebars from "handlebars";
 import bodyParser from "body-parser";
 import livereload from "./middlewares/livereload.js";
@@ -20,20 +21,6 @@ app.use(bodyParser.json());
 if (isDev) {
   app.use(livereload);
 }
-
-function strFromFile(path, options = { createOnNotFoun: false, defaultContent: "" }) {
-  try {
-    return fs.readFileSync(path).toString();
-  } catch (err) {
-    if (options.createOnNotFoun) {
-      fs.writeFileSync(path, options.defaultContent)
-    }
-
-    return options.defaultContent;
-  }
-}
-//strFromFile(path, {createOnNotFoun: true, defaultContent: "{}"});
-//strFromFile(path);
 
 const views = {
   index: Handlebars.compile(
